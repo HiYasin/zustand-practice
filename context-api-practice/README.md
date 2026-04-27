@@ -72,6 +72,7 @@ import Father from './Father';
 
 const Grandpa = () => {
     const { count, increment, decrement } = useContext(counterContext);
+    // const { count, increment, decrement } = useCounter();
     
     return (
         <div style={{ border: '1px solid yellow', padding: '10px', margin: '10px' }}>
@@ -93,6 +94,8 @@ import { counterContext } from '../context/CounterProvider';
 
 const Son = () => {
     const { count, increment, decrement } = useContext(counterContext);
+    // const { count, increment, decrement } = useCounter();
+    
     return (
         <div style={{ border: '1px solid green', padding: '10px', margin: '10px' }}>
             <button onClick={decrement}>-</button>
