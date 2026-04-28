@@ -27,6 +27,7 @@ export const createPersistStore = <storeType>() =>
 
 ## Define Your Store
 
+### Pattern 01: The simple delcartions
 ```typescript
 type CounterState = {
     count: number;
@@ -43,9 +44,35 @@ const counterStore: StateCreator<CounterState> = (set) => ({
 export const useCounterStore = createStore<CounterState>()(counterStore, 'counter-storage');
 ```
 
+### Pattern 02: Define values and actions seperately
+
+This pattern is useful when there is  a significant number of action functions and all the functions is used in a component. We will see a demonstration on Usage Pattern 03.
+
+```typescript
+type CounterState = {
+    count: number;
+    actions: CounterActions;
+};
+
+type CounterActions = {
+    increment: () => void;
+    decrement: () => void;
+    reset: () => void;
+};
+
+export const counterStore = createStore<CounterState>()((set) => ({
+    count: 0,
+    actions: {
+        increment: () => set((state) => ({ count: state.count + 1 })),
+        decrement: () => set((state) => ({ count: state.count - 1 })),
+        reset: () => set({ count: 0 }),
+    }
+}));
+```
+
 ## Usage Patterns
 
-### Pattern 1: Best Practice - Select Multiple with useShallow
+### Pattern 01: Best Practice - Select Multiple with useShallow
 **Use when:** You need multiple state values/actions to avoid re-renders on unrelated changes.
 ```typescript
 const { count, increment } = useCounterStore(
@@ -56,14 +83,21 @@ const { count, increment } = useCounterStore(
 );
 ```
 
-### Pattern 2: Individual Selectors
+### Pattern 02: Individual Selectors
 **Use when:** You only need specific values (most optimized).
 ```typescript
 const count = useCounterStore((state) => state.count);
 const increment = useCounterStore((state) => state.increment);
 ```
 
-### Pattern 3: ❌ Avoid - Subscribe to Entire Store
+### Pattern 03: Using action as selector
+**Use when:** You have to use a significant number of actions in single component. Advantage is it does't need to specify every action as inidvidual selector to avoid unnecessary re-rendering
+```typescript
+const actions = useCounterStore((state)=> state.actions);
+// Now you can use all the actions by calling methods.
+```
+
+### Pattern 04: ❌ Avoid - Subscribe to Entire Store
 **Problem:** Component re-renders on ANY state change, even unrelated ones.
 ```typescript
 const { count, increment, decrement } = useCounterStore();

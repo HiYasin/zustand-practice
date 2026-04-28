@@ -4,10 +4,8 @@ import { devtools, persist } from 'zustand/middleware';
 
 // Generic store creator
 export const createStore = <storeType>() =>
-    (store: StateCreator<storeType>, name: string) =>
-        create<storeType>()(
-            devtools(store, { name })
-        );
+    (store: StateCreator<storeType>) =>
+        create<storeType>()(store);
 
 // Persisted store creator
 export const createPersistStore = <storeType>() =>
@@ -28,6 +26,8 @@ export const createPersistStore = <storeType>() =>
 // Step 01: Define the state and actions for a counter store
 // ----------------------------------------------------------
 
+// Pattern 01: Define counter store
+
 // import { createStore } from './zustand';
 // type CounterState = {
 //     count: number;
@@ -45,6 +45,23 @@ export const createPersistStore = <storeType>() =>
 
 
 
+// Pattern 02: Define counter store + action pattern
+// import { createStore } from './zustand';
+// type CounterState = {
+//     count: number;
+//     actions: {
+//         increment: () => void;
+//         decrement: () => void;
+//     };
+// };
+// const counterStore: StateCreator<CounterState> = (set) => ({
+//     count: 0,
+//     actions: {
+//         increment: () => set((currentState) => ({ count: currentState.count + 1 })),
+//         decrement: () => set((currentState) => ({ count: currentState.count - 1 })),
+//     },
+// });
+// export const useCounterStore = createStore<CounterState>()(counterStore, 'counter-storage');
 
 
 // -------------------------------------------------------------------
@@ -71,9 +88,17 @@ export const createPersistStore = <storeType>() =>
 //   }))
 // );
 
-// ---------------------------------------------------------------------------------------------------------
+// For pattern 02, you can use the same approach to select only the necessary state and actions, for example:
+// const { count, actions } = useCounterStore(
+//   useShallow((state) => ({
+//     count: state.count,
+//     actions: state.actions,
+//   }))
+// );
+
+// ----------------------------------------------------------------------------------------------------------
 // Pattern-02: Selector pattern: Select only the necessary state and actions to avoid unnecessary re-renders
-// ---------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------
 // const count = useCounterStore((state) => state.count);
 // const increment = useCounterStore((state) => state.increment);
 
